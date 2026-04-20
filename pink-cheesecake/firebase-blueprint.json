@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "ContactRequest": {
+      "title": "Contact Request",
+      "description": "User submitted contact form data",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the person"
+        },
+        "contact": {
+          "type": "string",
+          "description": "Email or phone number"
+        },
+        "createdAt": {
+          "type": "timestamp"
+        }
+      },
+      "required": ["name", "contact", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/contact_requests/{requestId}": {
+      "schema": "ContactRequest",
+      "description": "Stores user inquiries from the landing page form."
+    }
+  }
+}

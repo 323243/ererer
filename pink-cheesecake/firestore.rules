@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definition
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() { return request.resource.data; }
+    
+    // Contact Request Validation
+    function isValidContactRequest(data) {
+      return data.keys().hasAll(['name', 'contact', 'createdAt'])
+        && data.keys().size() == 3
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.contact is string && data.contact.size() > 0 && data.contact.size() <= 150
+        && data.createdAt == request.time;
+    }
+
+    match /contact_requests/{requestId} {
+      allow create: if isValidId(requestId) 
+                    && isValidContactRequest(incoming());
+    }
+  }
+}
